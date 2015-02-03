@@ -4,12 +4,11 @@
     <meta name="layout" content="main" />
     <style type="text/css">
         #widget {
-            overflow: hidden; /* clearfix */
+            overflow: hidden;
         }
         #run-button {
-            float: left;
-            height: 37px;
-            margin-right: 6px;
+            height: 40px;
+            width: 100px;
         }
         #run-button > input {
             height: 100%;
@@ -26,17 +25,19 @@
             /**
              * Returns interface for progressbar
              */
-            progressbar : function(container) {
+            progressbarSet : function(containers) {
                 return {
-                    set : function(progress) {
-                        this.container.progressbar('value', progress)
+                    set : function(data) {
+                        this.containers.filter('#1').progressbar('value', data[0].progress)
+                        this.containers.filter('#2').progressbar('value', data[1].progress)
+                        this.containers.filter('#3').progressbar('value', data[2].progress)
                     },
-                    init : function(container) {
-                        this.container = container
-                        this.container.progressbar()
+                    init : function(containers) {
+                        this.containers = containers
+                        this.containers.progressbar()
                         return this
                     }
-                }.init(container)
+                }.init(containers)
             },
 
             bindEvents : function() {
@@ -57,7 +58,7 @@
             init : function(container) {
                 this.container = container
                 this.runButton = container.find('#run-button')
-                this.progressbar = this.progressbar(container.find('#progressbar'))
+                this.progressbarSet = this.progressbarSet(container.find(".progressbar"))
 
                 this.bindEvents()
                 return this
@@ -67,7 +68,7 @@
         var grailsEvents = new grails.Events("${createLink(uri: '')}", {transport:'sse'})
 
         grailsEvents.on('progress', function(data) {
-            widget.progressbar.set(data.progress)
+            widget.progressbarSet.set(data)
         })
 
     })
@@ -77,7 +78,9 @@
 
 <div id="widget">
     <div id="run-button"><input type="button" value="Run"/></div>
-    <div id="progressbar"></div>
+    <div class="progressbar" id="1"></div>
+    <div class="progressbar" id="2"></div>
+    <div class="progressbar" id="3"></div>
 </div>
 
 </body>
